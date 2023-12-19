@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shape Matrix Generator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Existing modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+
+        .modal-content, .modal3d-content {
+            margin: auto;
+            display: block;
+            max-width: 80%;
+            max-height: 80%;
+        }
+
+        .close, .close3d {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#qa">Q/A</a>
+        <a href="#documentation">Documentation</a>
+        <a href="#nextsteps">Next Steps</a>
+        <a href="#usecases">Use Cases</a>
+    </div>
+    <h1>Shape Matrix Generator</h1>
+
+    <!-- 2D Matrix Generation Form -->
+    <div>
+        <form action="/generate_matrix" method="post">
+            <label for="height">Height:</label>
+            <input type="number" name="height" id="height" required>
+            
+            <label for="width">Width:</label>
+            <input type="number" name="width" id="width" required>
+            
+            <label for="num_shapes">Number of Shapes:</label>
+            <input type="number" name="num_shapes" id="num_shapes" required>
+            
+            <input type="submit" value="Generate Matrix">
+        </form>
+    </div>
+
+    <!-- Placeholder for the generated image -->
+    <div id="generatedImage">
+        <!-- Image will be displayed here -->
+    </div>
+
+    <!-- Modal for 2D Matrix -->
+    <div id="matrixModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <!-- 3D Matrix Generation Form -->
+    <div>
+        <form action="/generate_3d_matrix" method="post">
+            <label for="height3d">Height:</label>
+            <input type="number" name="height" id="height3d" required>
+            
+            <label for="width3d">Width:</label>
+            <input type="number" name="width" id="width3d" required>
+
+            <label for="depth3d">Depth:</label>
+            <input type="number" name="depth" id="depth3d" required>
+            
+            <label for="num_shapes3d">Number of Shapes:</label>
+            <input type="number" name="num_shapes" id="num_shapes3d" required>
+            
+            <input type="submit" value="Generate 3D Matrix">
+        </form>
+    </div>
+
+    <!-- Placeholder for the generated 3D image -->
+    <div id="generated3DImage">
+        <!-- The 3D image will be displayed here -->
+    </div>
+
+    <!-- Modal for 3D Matrix -->
+    <div id="matrix3DModal" class="modal">
+        <span class="close3d" onclick="close3DModal()">&times;</span>
+        <img class="modal3d-content" id="modal3DImage">
+    </div>
+
+    <script>
+        function closeModal() {
+            var modal = document.getElementById("matrixModal");
+            modal.style.display = "none";
+        }
+
+        function close3DModal() {
+            var modal3d = document.getElementById("matrix3DModal");
+            modal3d.style.display = "none";
+        }
+
+        window.onload = function () {
+            var imageSrc = "{{ image_link }}";
+            if (imageSrc !== "") {
+                var modalImage = document.getElementById("modalImage");
+                var modal = document.getElementById("matrixModal");
+                modalImage.src = imageSrc;
+                modal.style.display = "block";
+            }
+
+            var imageSrc3D = "{{ image_link_3d }}"; // Assuming you have a separate Jinja2 variable for 3D images
+          
+            if (imageSrc3D !== "") {
+                var modal3DImage = document.getElementById("modal3DImage");
+                var modal3D = document.getElementById("matrix3DModal");
+                modal3DImage.src = imageSrc3D;
+                modal3D.style.display = "block";
+            }
+        };
+    </script>
+    <section id="qa">
+        <section class="algorithm-info">
+            <h2 class="heading">Algorithm Overview</h2>
+            <p class="paragraph">The base algorithm chosen for this exercise is a variation of Breadth-First Search (BFS). It consists of two main functions:</p>
+        
+            <div class="algorithm-function">
+                <h3>generate_shapes(width, height, num_shapes)</h3>
+                <p class="paragraph">Generates a random matrix filled with shapes. Each shape consists of connected pixels with the same ID.</p>
+            </div>
+        
+            <div class="algorithm-function">
+                <h3>calculate_output_matrix(input_matrix, num_shapes)</h3>
+                <p class="paragraph">Calculates an output matrix where each pixel represents the closest shape ID from the input matrix using distance transformation.</p>
+            </div>
+        
+            <div class="complexities-info">
+                <h2 class="heading">Complexities</h2>
+                <p class="paragraph">The space and time complexities of the solution depend on the size of the input matrix and the number of shapes (num_shapes).</p>
+        
+                <div class="complexity-type">
+                    <h3>Space Complexity</h3>
+                    <p class="paragraph">
+                        The <code class="inline-code">generate_shapes</code> function creates a matrix of size height x width, which is <code class="inline-code">O(height x width)</code>.<br>
+                        The <code class="inline-code">calculate_output_matrix</code> function creates distance maps, which also require space proportional to height x width.<br>
+                        Overall space complexity: <code class="inline-code">O(height x width)</code>
+                    </p>
+                </div>
+        
+                <div class="complexity-type">
+                    <h3>Time Complexity</h3>
+                    <p class="paragraph">
+                        The <code class="inline-code">generate_shapes</code> function has a time complexity of approximately <code class="inline-code">O(num_shapes x max(shape_size) x (height x width))</code>, where max(shape_size) is the maximum size of a shape. In practice, it's a random process.<br>
+                        The <code class="inline-code">calculate_output_matrix</code> function uses the <code class="inline-code">distance_transform_edt</code> function, which has a time complexity of <code class="inline-code">O(height x width x log(height x width))</code>.<br>
+                        Overall time complexity: Dominated by the <code class="inline-code">generate_shapes</code> function.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="heading">
+                    Does your algorithm utilize each core of the CPU, if allowed?
+                </h2>
+                <p class="paragraph">
+                    The provided code does not explicitly utilize multiple CPU cores for parallel processing.
+                    The operations are primarily sequential, and Python's Global Interpreter Lock (GIL) restricts multi-threaded execution
+                    for CPU-bound operations in CPython (the standard Python interpreter). To leverage multiple CPU cores, you may need to explore parallel processing libraries
+                    like multiprocessing or concurrent.futures.
+                    <br><br>
+                    For Example:
+                </p>
+                <pre class="code-block">
+            def generate_shapes_parallel(args):
+                width, height, num_shapes, section_id = args
+                # Calculate the section of the matrix to process based on section_id
+                # Perform shape generation for the specified section
+                # Return the generated shapes for the section
+            
+            def generate_shapes_parallelized(width, height, num_shapes, num_processes):
+                pool = multiprocessing.Pool(processes=num_processes)
+                sections = [(width, height, num_shapes, section_id) for section_id in range(num_processes)]
+                results = pool.map(generate_shapes_parallel, sections)
+                pool.close()
+                pool.join()
+                # Combine the results from different sections if necessary
+                return combined_results
+                </pre>
+                <p class="paragraph">
+                    Keep in mind that the effectiveness of parallelization depends on the nature of the workload and the available CPU cores.
+                    It may not always result in a significant speedup, but it can be beneficial for large matrices and a high number of shapes.
+                </p>
+            </div>
+            
+            <div class="section">
+                <h2 class="heading">Explain how you would handle situations where the input matrix is exceptionally large and cannot fit into the memory of a standard computer.</h2>
+                <h4>When dealing with exceptionally large input matrices that cannot fit into memory, you can consider the following strategies:</h4>
+                <ul class="list">
+                    <li><strong>Streaming Input:</strong> Stream input data from external storage (e.g., files or databases) and process data in smaller chunks or tiles, avoiding loading the entire matrix into memory at once.</li>
+                    <li><strong>Out-of-Core Processing:</strong> Utilize libraries and techniques like Dask or custom chunking for computations on portions of the data without loading the entire dataset into memory.</li>
+                    <li><strong>Parallel Processing:</strong> Divide the processing into parallel tasks using multiprocessing libraries or distributed computing frameworks.</li>
+                    <li><strong>Compression:</strong> Use compression techniques for matrices with redundant or sparse data to reduce memory usage while preserving essential information.</li>
+                    <li><strong>Reduced Precision:</strong> Employ reduced precision data types (e.g., 16-bit instead of 32-bit) to save memory without significantly impacting the results.</li>
+                    <li><strong>Cluster or Cloud Computing:</strong> For exceptionally large matrices, distributed computing frameworks or cloud-based solutions may be necessary.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2 class="heading">Can you extend the algorithm to work in three dimensions as well?</h2>
+                <p class="paragraph">
+                    I did extend them to work in three dimensions (3D) by modifying the generate_shapes and calculate_output_matrix functions. These modified functions would generate and process 3D matrices with an added input for depth.
+                </p>
+            </div>
+            
+            <div class="section">
+                <h2 class="heading">Can your algorithm be adapted to handle dynamically changing matrices, where shapes can be added or removed over time?</h2>
+                <p class="paragraph">
+                    Yes, adapting it for dynamically changing matrices with shapes added or removed over time requires significant modifications, such as real-time updates to the output matrix and mechanisms for efficiently handling shape insertion, deletion, and modification.
+                </p>
+            </div>
+        
+        
+    </section>
+    
+    
+    <section id="documentation" class="section algorithm-info">
+        <h2 class="heading">Documentation</h2>
+    
+        <!-- Introduction -->
+        <h3 class="heading">Introduction</h3>
+        <p class="paragraph">
+            This section provides documentation for the Shape Matrix Generator script.
+        </p>
+    
+        <!-- Usage -->
+        <h3 class="heading">Usage</h3>
+        <p class="paragraph">
+            To generate shape matrices and calculate output matrices, follow these steps:
+        </p>
+    
+        <!-- Step 1: Import -->
+        <h4 class="heading">Genrate Shapes (2d)</h4>
+        <pre class="code-block">
+            def generate_shapes(width, height, num_shapes):
+            matrix = np.zeros((height, width), dtype=int)
+            directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
+        
+            for shape_id in range(1, num_shapes + 1):
+                # Start with a single seed point
+                while True:
+                    x, y = np.random.randint(width), np.random.randint(height)
+                    if matrix[y, x] == 0:
+                        matrix[y, x] = shape_id
+                        break
+        
+                # Determine the shape size randomly
+                shape_size = np.random.randint(2, 8)
+        
+                for _ in range(shape_size):
+                    np.random.shuffle(directions)  # Randomize directions
+                    for dx, dy in directions:
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < width and 0 <= ny < height and matrix[ny, nx] == 0:
+                            x, y = nx, ny  # Move to the new position
+                            matrix[y, x] = shape_id
+                            break
+        
+                # Ensure at least two shapes touch
+                if shape_id == 1:  # First shape created
+                    touch_point_x, touch_point_y = x, y
+        
+                if shape_id == 2:  # Create second shape close to the first
+                    matrix[touch_point_y, touch_point_x] = shape_id
+        
+                # Ensure at least one shape is not a straight line
+                if shape_id == 3 and shape_size > 1:
+                    # Add an additional point in a different direction for the third shape
+                    for dx, dy in directions:
+                        additional_x, additional_y = x + dx, y + dy
+                        if 0 <= additional_x < width and 0 <= additional_y < height and matrix[additional_y, additional_x] == 0:
+                            matrix[additional_y, additional_x] = shape_id
+                            break
+        
+            return matrix
+       </pre>
+    
+        <!-- Step 2: Generate Shapes -->
+        <h4 class="heading">Calculating Output Matrix</h4>
+        <pre class="code-block">
+            def calculate_output_matrix(input_matrix, num_shapes):
+            height, width = input_matrix.shape
+            output_matrix = np.full((height, width), -1)  # Start with -1 as a default value for non-background pixels
+            
+            # Calculate distance maps for each shape
+            distance_maps = []
+            for shape_id in range(1, num_shapes + 1):
+                distance_map = distance_transform_edt(input_matrix != shape_id)
+                distance_maps.append(distance_map)
+            
+            # For each background pixel, find the closest shape
+            for y in range(height):
+                for x in range(width):
+                    if input_matrix[y, x] == 0:  # It's a background pixel
+                        distances = [distance_maps[shape_id-1][y, x] for shape_id in range(1, num_shapes + 1)]
+                        min_distance = min(distances)
+                        closest_shapes = [shape_id for shape_id, dist in enumerate(distances, 1) if dist == min_distance]
+                        
+                        if len(closest_shapes) == 1:
+                            # Only one closest shape
+                            closest_shape_id = closest_shapes[0]
+                            output_matrix[y, x] = -closest_shape_id
+                        else:
+                            # Equidistant to multiple shapes, leave it as 0 to mark as red later
+                            output_matrix[y, x] = 0
+        
+            # Copy the original shapes onto the output matrix with their original IDs as negative values
+            for shape_id in range(1, num_shapes + 1):
+                output_matrix[input_matrix == shape_id] = -shape_id
+            
+            return output_matrix
+       </pre>
+    
+        <!-- Step 3: Calculate Output Matrix -->
+        <h4 class="heading">Visualizing the output</h4>
+        <pre class="code-block">
+   
+def plot_matrices(input_matrix, output_matrix, num_shapes):
+fig, axs = plt.subplots(1, 2, figsize=(16, 8))
+
+# Input matrix visualization with grid
+axs[0].set_title('Input Matrix')
+input_mat = axs[0].matshow(input_matrix, cmap='nipy_spectral')
+axs[0].grid(which='minor', color='w', linestyle='-', linewidth=0.5)
+axs[0].grid(which='major', visible=False)
+axs[0].set_xticks(np.arange(-0.5, input_matrix.shape[1], 1), minor=True)
+axs[0].set_yticks(np.arange(-0.5, input_matrix.shape[0], 1), minor=True)
+axs[0].tick_params(which='both', length=0)
+axs[0].set_xticklabels([])
+axs[0].set_yticklabels([])
+
+# Output matrix visualization with grid
+unique_ids = np.unique(output_matrix)
+colors = plt.cm.jet(np.linspace(0, 1, len(unique_ids)))
+color_map = {id_: color for id_, color in zip(unique_ids, colors)}
+color_map[0] = [1, 0, 0, 1]  # Red color for equidistant points (ID 0)
+
+# Overlay the original shapes with unique colors on top of the output matrix
+overlay_image = np.zeros((*output_matrix.shape, 4))
+shape_colors = plt.cm.Paired(np.arange(num_shapes))
+for shape_id in range(1, num_shapes + 1):
+    overlay_image[input_matrix == shape_id] = shape_colors[shape_id - 1]
+
+# Create the output matrix background
+for unique_id in unique_ids:
+    mask = (output_matrix == unique_id) & (input_matrix == 0)
+    overlay_image[mask] = color_map[unique_id]
+
+axs[1].set_title('Output Matrix with Overlay')
+output_mat = axs[1].matshow(overlay_image)
+axs[1].grid(which='minor', color='w', linestyle='-', linewidth=0.5)
+axs[1].grid(which='major', visible=False)
+axs[1].set_xticks(np.arange(-0.5, output_matrix.shape[1], 1), minor=True)
+axs[1].set_yticks(np.arange(-0.5, output_matrix.shape[0], 1), minor=True)
+axs[1].tick_params(which='both', length=0)
+axs[1].set_xticklabels([])
+axs[1].set_yticklabels([])
+
+plt.tight_layout()
+image_path = f"static/matrices/matrix2d.png"
+plt.savefig(image_path)
+
+# Close the figure to free up memory
+plt.close()
+
+return image_path
+       </pre>
+    
+        <!-- Step 4: Visualization -->
+        <h4 class="heading">Usage in flask app</h4>
+        <pre class="code-block">
+            @app.route('/generate_matrix', methods=['POST'])
+            def generate_matrix():
+                height = int(request.form['height'])
+                width = int(request.form['width'])
+                num_shapes = int(request.form['num_shapes'])
+            
+                print(num_shapes, height,width)
+                
+                # Generate the input matrix
+                input_matrix = generate_shapes(width, height, num_shapes)
+                
+                # Calculate the output matrix
+                output_matrix = calculate_output_matrix(input_matrix, num_shapes)
+                
+                # Generate a unique image path
+                image_link = plot_matrices(input_matrix, output_matrix, num_shapes)
+                
+                # Render the Jinja2 template and pass the updated image link and num_shapes as context variables
+                return render_template('index.html', image_link=image_link, num_shapes=num_shapes)
+     </pre>
+
+    </section>
+    
+    
+    
+    <section id="nextsteps" class="section">
+        <h2 class="heading">Next Steps for Project Improvement</h2>
+        
+        <h3 class="heading">Leveraging Multi-Processing for Larger Matrices</h3>
+        <p class="paragraph">
+            To enhance the efficiency of the Shape Matrix Generator, especially when dealing with large matrices, implementing multi-processing can be a significant step forward. By distributing the workload across multiple CPU cores, the script can handle larger datasets more effectively, reducing processing time and improving performance.
+        </p>
+        <p class="paragraph">
+            Python's <code class="inline-code">multiprocessing</code> module offers a straightforward way to parallelize tasks. This could be particularly beneficial in the <code class="inline-code">generate_shapes</code> and <code class="inline-code">calculate_output_matrix</code> functions, where parallel processing can expedite computations.
+        </p>
+    
+        <h3 class="heading">Potential Use Cases in Building AI Applications</h3>
+        <p class="paragraph">
+            The Shape Matrix Generator has potential applications in the realm of artificial intelligence. Here are a few examples:
+        </p>
+        <ul class="list">
+            <li>Training Data for Machine Learning: The matrices generated can serve as training data for machine learning models, particularly in pattern recognition and image processing tasks.</li>
+            <li>Simulation Environments: The script can be used to create dynamic environments for AI simulations, aiding in the development of robust AI algorithms that adapt to varying scenarios.</li>
+            <li>Algorithm Optimization: The project can be a testbed for optimizing AI algorithms, especially those involving geometrical computations and spatial analysis.</li>
+        </ul>
+    
+        <p class="paragraph">
+            These use cases represent just a starting point, and there is ample scope for exploring further applications in AI research and development.
+        </p>
+    </section>
+    
+    <section id="usecases" class="section">
+        <h2 class="heading">Use Cases for the Shape Matrix Generator</h2>
+        
+        <h3 class="heading">1. Image Processing and Computer Vision</h3>
+        <p class="paragraph">
+            The tool can be used to generate synthetic datasets for training and testing image processing algorithms. This is particularly useful in computer vision applications where pattern recognition, shape detection, and object segmentation are crucial.
+        </p>
+    
+        <h3 class="heading">2. Educational Tools for Geometry Learning</h3>
+        <p class="paragraph">
+            In educational settings, the generator can create interactive materials to help students learn about geometric shapes and their properties. By visualizing different shapes and transformations, it enhances the learning experience in a more engaging way.
+        </p>
+    
+        <h3 class="heading">3. Game Development</h3>
+        <p class="paragraph">
+            Game developers can utilize the tool to procedurally generate complex game environments or puzzles. This allows for the creation of unique and varied gaming experiences, as each generated shape matrix can result in a different in-game scenario.
+        </p>
+    
+        <h3 class="heading">4. Simulation of Natural Phenomena</h3>
+        <p class="paragraph">
+            The Shape Matrix Generator can simulate natural patterns or phenomena, such as terrain formations or growth patterns in biology. This has applications in both scientific research and the creation of realistic graphics for media and entertainment.
+        </p>
+    
+        <h3 class="heading">5. Architectural Design and 3D Modeling</h3>
+        <p class="paragraph">
+            Architects and 3D modelers can use the tool to inspire novel structural designs. By exploring the vast array of generated shapes, they can find unique forms and patterns that could be adapted into innovative architectural concepts.
+        </p>
+    </section>
+    
+</body>
+</html>
+

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Matrices Generated</title>
+</head>
+<body>
+    <h2>Matrices Generated and Visualized</h2>
+    <p>Input Matrix:</p>
+    <a href="#" id="inputModalLink" onclick="openModal('{{ url_for('static', filename='matrices/matrix_6.png') }}')">
+        <img src="{{ url_for('static', filename='matrices/matrix_6.png') }}" alt="Input Matrix">
+    </a>
+    <p>Output Matrix:</p>
+    <!-- Add similar code for the output matrix -->
+    
+    <!-- Modal -->
+    <div id="matrixModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        function openModal(imageSrc) {
+            var modal = document.getElementById("matrixModal");
+            var modalImage = document.getElementById("modalImage");
+            modalImage.src = imageSrc;
+            modal.style.display = "block";
+        }
+
+        function closeModal() {
+            var modal = document.getElementById("matrixModal");
+            modal.style.display = "none";
+        }
+    </script>
+</body>
+</html>
