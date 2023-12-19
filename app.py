@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
 import numpy as np
-import matplotlib.colors as mcolors
+
+from scipy.ndimage import distance_transform_edt
 
 
 app = Flask(__name__)
@@ -54,7 +55,6 @@ def generate_shapes(width, height, num_shapes):
 
     return matrix
 
-from scipy.ndimage import distance_transform_edt
 
 def calculate_output_matrix(input_matrix, num_shapes):
     height, width = input_matrix.shape
